@@ -1,30 +1,34 @@
 """
 Adapted from keras example cifar10_cnn.py
-Train ResNet-18 on the CIFAR10 small images dataset.
-GPU run command with Theano backend (with TensorFlow, the GPU is automatically used):
-    THEANO_FLAGS=mode=FAST_RUN,device=gpu,floatX=float32 python cifar10.py
 """
 from __future__ import print_function
 #from keras.datasets import cifar10
 from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import ReduceLROnPlateau, EarlyStopping,CSVLogger
-
+import keras
+from keras import regularizers
 import numpy as np
-import keras_resnet
+import resnet
 import os
 from PIL import Image
 import matplotlib.pyplot as plt
 import pylab as pl
 
-
-lr_reducer = ReduceLROnPlateau(factor=np.sqrt(0.1), cooldown=0, patience=5, min_lr=0.5e-6)
-early_stopper = EarlyStopping(min_delta=0.001, patience=10)
-csv_logger = CSVLogger('model.csv')
-
-batch_size = 120
+batch_size = 64
 nb_classes = 2
-nb_epoch = 40
+nb_epoch = 75
 data_augmentation_switch = [False, True]
+reduceFactor = 0.1
+patience=5
+learnRate=0.1
+min_learningrate = 1.e-8
+
+lr_reducer = ReduceLROnPlateau(monitor='val_loss', factor=reduceFactor, cooldown=0, \
+                               patience=patience,
+                               mode='auto',min_lr=min_learningrate
+                              )
+early_stopper = EarlyStopping(min_delta=0.001, patience=patience)
+csv_logger = CSVLogger('model.csv')
 
 # input image dimensions
 img_rows, img_cols = 32, 32
@@ -33,26 +37,28 @@ img_channels = 3
 
 def get_files(file_dir):
     train = []
-    label = [] 
-    for filename in os.listdir(file_dir):
-        name = filename.split('.')
-        image = Image.open(os.path.join(file_dir, filename))
-        image = image.resize([img_rows, img_cols])
-        image = np.array(image)
-        train.append(image/255)
-        if name[0]=='0':
-            label.append([1,0])
-        else:
-            label.append([0,1])
+    label = []
+    subDirList = [dirname for dirname in os.listdir(file_dir) \
+                  if os.path.isdir(os.path.join(file_dir,dirname))]
+    for subDir in subDirList:
+        for filename in os.listdir(os.path.join(file_dir, subDir)):
+            name = filename.split('.')
+            image = Image.open(os.path.join(file_dir, subDir, filename))
+            image = image.resize([img_rows, img_cols])
+            image = np.array(image)
+            train.append(image/255)
+            if name[0]=='0':
+                label.append([1,0])
+            else:
+                label.append([0,1])
     print('There are %d pic'%(len(label)))
     train = np.array(train)
     label = np.array(label)
     train = train.reshape(train.shape[0], img_rows, img_cols, img_channels)
     return train,label
 # The data: train_set  validation_set
-#train_dir ="/home/boper/CNN/pic/trainTest"
-train_dir = "./picTrain_merge"
-validation_dir = "./picValidation_merge"
+train_dir = "./picTrain"
+validation_dir = "./picValidation"
 train, train_label = get_files(train_dir)
 validation, validation_label = get_files(validation_dir)
 
@@ -64,11 +70,15 @@ mean_image = np.mean(train, axis=0)
 train -= mean_image
 validation -= mean_image
 
-model = keras_resnet.ResnetBuilder.build_resnet_50((img_channels, img_rows,
-                                                    img_cols), nb_classes)
+model = resnet.ResnetBuilder.build_resnet_50((img_channels, img_rows,
+                                                    img_cols), nb_classes
+                                                  )
+keras.optimizers.Adadelta(lr=learnRate, rho=0.95, epsilon=None, decay=0.0)
+#keras.optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
 model.compile(#loss='binary_crossentropy',
               loss='categorical_crossentropy',
-              optimizer='adam',
+              #optimizer='adam',
+              optimizer='Adadelta',
               metrics=['accuracy'])   #categorical_crossentropy
 
 # This will do preprocessing and realtime data augmentation:
@@ -85,7 +95,7 @@ for data_augmentation in data_augmentation_switch:
         train_generator = train_datagen.flow_from_directory(
             directory=r"./picTrain/",
             target_size=(32, 32),
-            batch_size=120,
+            batch_size=batch_size,
             color_mode="rgb",
             shuffle=True,
             seed=42,
@@ -94,18 +104,19 @@ for data_augmentation in data_augmentation_switch:
         validation_generator = test_datagen.flow_from_directory(
             directory=r"./picvalidation/",
             target_size=(32, 32),
-            batch_size=120,
+            batch_size=batch_size,
             color_mode="rgb",
             shuffle=True,
-            seed=42,
+            seed=19,
             class_mode='categorical')
 
         model.fit_generator(
             generator=train_generator,
-            steps_per_epoch=120,
-            epochs=80,
+            steps_per_epoch=train.shape[0] // batch_size,
+            epochs=nb_epoch,
             validation_data=validation_generator,
-            validation_steps=40)
+            validation_steps=40,
+            callbacks=[lr_reducer, early_stopper, csv_logger])
         model.save('./parameter_save/weight.h5')
     else:
         print('Using real-time data augmentation.')
@@ -134,7 +145,7 @@ for data_augmentation in data_augmentation_switch:
                             epochs=nb_epoch, verbose=1, max_q_size=250,
                             callbacks=[lr_reducer, early_stopper, csv_logger]
                                      )
-        model.save('./parameter_save/weight_c.h5')
+        model.save('./parameter_save/weight_augmentation.h5')
 
 # Plot the loss and accuracy curves for training and validation 
 epoch = list(range(nb_epoch))
