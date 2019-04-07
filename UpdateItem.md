@@ -1,9 +1,13 @@
 #Update Item List
 
 ##2019-04-07 18:35:58
+
 ###Training & Validation
+
 + ####Callback of learning reducer & Early Stoper
-	#####Switch Off
+
+#####Switch Off
+
 + ####Optimizer change from Adadelta to Adam
 	#####parameter setting:
 		learnRate = 1.e-4
