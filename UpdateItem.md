@@ -3,24 +3,27 @@
 ## 2019-04-07 18:35:58
 ### Training & Validation
 + #### Callback of learning reducer & Early Stoper
-	##### Switch Off
+	 - Switch Off
 + #### Optimizer change from Adadelta to Adam
-	##### parameter setting:
+	 -  parameter setting:
+	 	```python
 		learnRate = 1.e-4
 		lr_decay = 0.5
 		beta_1 = 0.9,
 		beta_2 = 0.999
 		epsilon = 1.e-8
-
+		```
 + #### Add plot for feedback debug (FirstTrain)
 
 ### Network Defination
 + #### Kernal regularizer setting:
-##### Enlarge weight of L2 regularizer to imporve Acc of Validation
+	 - Enlarge weight of L2 regularizer to imporve Acc of Validation
+		```python
 		kernel_regularizer = conv_params.setdefault("kernel_regularizer", l2(1.e+4)
-		l2(1.e-6) ---> l2(1.e+4)
+		l2(1.e-6) -> l2(1.e+4)
+		```
 + #### Change Block type:
-##### From Bottleneck to Basic
+	 -  From Bottleneck to Basic
 
 ### Result
 #### Train & Verify
@@ -51,8 +54,8 @@ Epoch 11/75
 ```
 #### Status
 + ##### Train
-On going & Cross check
+	 - On going & Cross check
 + ##### Test
-Debug...
+	 - Debug...
 + ##### Evaluate
-Not start
+	 - Not start
