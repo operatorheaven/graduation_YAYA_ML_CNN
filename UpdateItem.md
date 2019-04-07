@@ -1,29 +1,29 @@
-#Update Item List
+# Update Item List
 
-##2019-04-07 18:35:58
-###Training & Validation
-+ ####Callback of learning reducer & Early Stoper
-	#####Switch Off
-+ ####Optimizer change from Adadelta to Adam
-	#####parameter setting:
+## 2019-04-07 18:35:58
+### Training & Validation
++ #### Callback of learning reducer & Early Stoper
+	##### Switch Off
++ #### Optimizer change from Adadelta to Adam
+	##### parameter setting:
 		learnRate = 1.e-4
 		lr_decay = 0.5
 		beta_1 = 0.9,
 		beta_2 = 0.999
 		epsilon = 1.e-8
 
-+ ####Add plot for feedback debug (FirstTrain)
++ #### Add plot for feedback debug (FirstTrain)
 
-###Network Defination
-+ ####Kernal regularizer setting:
-#####Enlarge weight of L2 regularizer to imporve Acc of Validation
+### Network Defination
++ #### Kernal regularizer setting:
+##### Enlarge weight of L2 regularizer to imporve Acc of Validation
 		kernel_regularizer = conv_params.setdefault("kernel_regularizer", l2(1.e+4)
 		l2(1.e-6) ---> l2(1.e+4)
-+ ####Change Block type:
-#####From Bottleneck to Basic
++ #### Change Block type:
+##### From Bottleneck to Basic
 
-###Result
-####Train & Verify
+### Result
+#### Train & Verify
 ```python
 Epoch 1/75
 75/75 [==============================] - 236s 3s/step - loss: 0.2022 - acc: 0.9233 - val_loss: 0.8762 - val_acc: 0.7290
@@ -49,10 +49,10 @@ Epoch 11/75
 75/75 [==============================] - 211s 3s/step - loss: 0.0180 - acc: 0.9973 - val_loss: 1.1418 - val_acc: 0.6858
 ......
 ```
-####Status
-+ #####Train
+#### Status
++ ##### Train
 On going & Cross check
-+ #####Test
++ ##### Test
 Debug...
-+ #####Evaluate
++ ##### Evaluate
 Not start
