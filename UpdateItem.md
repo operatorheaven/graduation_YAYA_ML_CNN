@@ -1,5 +1,65 @@
 # Update Item List
 
+## 2019-04-15 22:52:32
+### Training & Validation
++ #### Callback of learning reducer & Early Stoper
+	 - Switch Turn [OFF->ON]
++ #### Optimizer change keep Adam
+	 -  parameter setting:
+	 	```python
+		learnRate = 1.e-2
+		lr_decay = 0.0
+		beta_1 = 0.9,
+		beta_2 = 0.999
+		epsilon = 1.e-8
+		amsgrad = False
+		```
++ #### Add method of plot for feedback debug (FirstTrain) and Data Augmentation process
+
+### Network Defination
++ #### Kernal regularizer setting:
+	 - Tune weight of L2 regularizer to imporve Acc of Validation
+		```python
+		kernel_regularizer = conv_params.setdefault("kernel_regularizer", l2(1.e+2)
+		l2(1.e+4) -> l2(1.e+2)
+		```
+
+### Result
+#### Train & Verify
+```python
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+......
+```
+#### Status
++ ##### Train
+	 - Finish First stage & Model Done(without Data Augmentation)
++ ##### Test
+	 - New create dataset for Test and release
+	 - [On Going]
++ ##### Evaluate
+	 - TO DO
+
 ## 2019-04-07 18:35:58
 ### Training & Validation
 + #### Callback of learning reducer & Early Stoper
