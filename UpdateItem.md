@@ -1,5 +1,39 @@
 # Update Item List
 
+## 2019-04-16 22:08:57
+### Training & Validation
++ #### Callback of learning reducer & Early Stoper
+	 - Modify "enable switch" to "order list" for complete training flow
++ #### Differentiate between total training epoch and per step epochs of batch training
+	 - nb_epoch = 20 (costum setting)
+	 - batch_epoch_train/val = 40 (total sample size//batch size)
+### Network Defination
++ #### Kernal regularizer setting:
+	 - Tune weight of L2 regularizer to imporve Acc of Validation
+		```python
+		kernel_regularizer = conv_params.setdefault("kernel_regularizer", l2(1.e-4)
+		l2(1.e+2) -> l2(1.e-4)
+		```
+
+### Result
+#### Train & Verify
+```python
+None
+```
+![alt text](./feedback.png "First Training@epoch = 40")
+
+#### Status
++ ##### Train
+	 - Finish First stage & Model Done(without Data Augmentation) [Done]
+	 - Training with date augmentation [On Going]
++ ##### Test
+	 - Update dataset for Test and release [Done]
+	 - New create script to process video for test [On Going]
++ ##### Evaluate
+	 - TO DO
++ ##### Thesis writing
+	 - TO DO (None of my business)
+
 ## 2019-04-15 22:52:32
 ### Training & Validation
 + #### Callback of learning reducer & Early Stoper
