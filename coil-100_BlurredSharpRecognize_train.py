@@ -1,5 +1,6 @@
 """
-Adapted from keras example cifar10_cnn.py
+Adapted from keras example cifar10_cnn.py 
+Modify sample to check blurred pic with coil-100 based
 """
 from __future__ import print_function
 #from keras.datasets import cifar10
@@ -15,14 +16,17 @@ import matplotlib.pyplot as plt
 import pylab as pl
 
 batch_size = 240
-nb_epoch = 40
+nb_epoch = 20
+batch_epoch_train = 40
 nb_classes = 2
-batch_size_val = 120 
-nb_epoch_val = 40
-learnRate=1.e-2
-lr_decay=0.0
+batch_size_val = 120
+batch_epoch_val = 40
+nb_epoch_val = 20
+learnRate = 1.e-2
+lr_decay = 0.0
 data_augmentation_switch = [False, True]
-#data_augmentation = False
+#data_augmentation_switch = data_augmentation_switch[::-1]
+#data_augmentation = True
 '''
 reduceFactor = np.sqrt(0.1)
 patience_plaute=10
@@ -47,14 +51,23 @@ img_channels = 3
 #===================Method Define Start===============
 def plotTrainResult(obj_result, nb_epoch):
     #obj_result = FirstTrain
-    #nb_epoch = nb_epoch
+    #nb_epoch = nb_epoch = total epoch
     epoch = list(range(nb_epoch))
     objNameFig = plt.figure()
-    plt.plot(epoch,obj_result.history['acc'], 'bo-.', label="Training accuracy")
-    plt.plot(epoch,obj_result.history['val_acc'],'ro-.', label="validation accuracy")
+    plt.plot(epoch,obj_result.history['acc'], 'bo-.', 
+             label="Training accuracy"
+            )
+    plt.plot(epoch,obj_result.history['val_acc'],'ro-.', 
+             label="validation accuracy"
+            )
     plt.legend(loc='lower right')
     final_accuracy = obj_result.history['acc'][-1]
-    plt.annotate(r'acc='+str(final_accuracy), xy=(nb_epoch-1,final_accuracy), xytext=(nb_epoch-1+0.1,final_accuracy-0.2),fontsize = 16,arrowprops=dict(facecolor='black', shrink=0.05))
+    plt.annotate(r'acc='+str(final_accuracy), 
+                 xy=(nb_epoch-1,final_accuracy), 
+                 xytext=(nb_epoch-1+0.1,final_accuracy-0.2),
+                 fontsize = 16,
+                 arrowprops=dict(facecolor='black', shrink=0.05)
+                )
     plt.xticks(np.arange(len(epoch)), epoch, rotation=45)
     pl.xlabel('epoch')
     pl.ylabel('acc')
@@ -70,28 +83,68 @@ def plotAugmentationResult(obj_result, obj_result_augmentation, nb_epoch):
     #nb_epoch = nb_epoch
     epoch = list(range(nb_epoch))
     objNameFig = plt.figure()
-    plt.subplot(2,1,1)
-    plt.plot(epoch,obj_result_augmentation.history['loss'], 'bo-.', label="Training loss")
-    plt.plot(epoch,obj_result_augmentation.history['val_loss'],'ro-.', label="validation loss")
+    plt.subplot(3,1,1)
+    plt.plot(epoch,obj_result_augmentation.history['loss'], 'bo-.', 
+             label="Training loss"
+            )
+    plt.plot(epoch,obj_result_augmentation.history['val_loss'],'ro-.', 
+             label="validation loss"
+            )
     plt.legend(loc='upper right')
-
     final_loss = obj_result_augmentation.history['loss'][-1]
-    plt.annotate(r'loss='+str(final_loss), xy=(nb_epoch-1,final_loss), xytext=(nb_epoch-1+0.1,final_loss+0.2),fontsize = 16,arrowprops=dict(facecolor='black', shrink=0.05))
+    plt.annotate(r'loss='+str(final_loss), 
+                 xy=(nb_epoch-1,final_loss), 
+                 xytext=(nb_epoch-1+0.1,final_loss+0.2),
+                 fontsize = 16,
+                 arrowprops=dict(facecolor='black', shrink=0.05)
+                )
     plt.xticks(np.arange(len(epoch)), epoch, rotation=45)
-    pl.title('Using Data Augmentation')
+    pl.title('Loss of Training Using Data Augmentation')
     pl.xlabel('epoch')
     pl.ylabel('loss')
     pl.axis([0.0,nb_epoch,0.0,1.0])
     plt.grid(True)
 
-    plt.subplot(2,1,2)
-    plt.plot(epoch,obj_result.history['acc'], 'bo-.', label="Training accuracy")
-    plt.plot(epoch,obj_result.history['val_acc'],'ro-.', label="validation accuracy")
+    plt.subplot(3,1,2)
+    plt.plot(epoch,obj_result_augmentation.history['acc'], 'bo-.', 
+             label="Training accuracy"
+            )
+    plt.plot(epoch,obj_result_augmentation.history['val_acc'],'ro-.', 
+             label="validation accuracy"
+            )
+    plt.legend(loc='lower right')
+    final_accuracy_aug = obj_result_augmentation.history['acc'][-1]
+    plt.annotate(r'acc='+str(final_accuracy_aug),
+                 xy=(nb_epoch-1,final_accuracy_aug),
+                 xytext=(nb_epoch-1+0.1,final_accuracy_aug-0.2),
+                 fontsize = 16,
+                 arrowprops=dict(facecolor='black', shrink=0.05)
+                )
+    plt.xticks(np.arange(len(epoch)), epoch, rotation=45)
+    pl.title('Accuracy of Training Using Data Augmentation')
+    pl.xlabel('epoch')
+    pl.ylabel('acc')
+    pl.axis([0.0,nb_epoch,0.0,1.0])
+    plt.grid(True)
+
+    plt.subplot(3,1,3)
+    plt.plot(epoch,obj_result.history['acc'], 'bo-.', 
+             label="Training accuracy"
+            )
+    plt.plot(epoch,obj_result.history['val_acc'],'ro-.', 
+             label="validation accuracy"
+            )
     plt.legend(loc='lower right')
 
     final_accuracy = obj_result.history['acc'][-1]
-    plt.annotate(r'acc='+str(final_accuracy), xy=(nb_epoch-1,final_accuracy), xytext=(nb_epoch-1+0.1,final_accuracy-0.2),fontsize = 16,arrowprops=dict(facecolor='black', shrink=0.05))
+    plt.annotate(r'acc='+str(final_accuracy), 
+                 xy=(nb_epoch-1,final_accuracy), 
+                 xytext=(nb_epoch-1+0.1,final_accuracy-0.2),
+                 fontsize = 16,
+                 arrowprops=dict(facecolor='black', shrink=0.05)
+                )
     plt.xticks(np.arange(len(epoch)), epoch, rotation=45)
+    pl.title('Accuracy of Training without Data Augmentation')
     pl.xlabel('epoch')
     pl.ylabel('acc')
     pl.axis([0.0,nb_epoch,0.0,1.0])
@@ -102,6 +155,7 @@ def plotAugmentationResult(obj_result, obj_result_augmentation, nb_epoch):
 
 #===================Method Define End================
 
+#'''
 def get_files(file_dir):
     train = []
     label = []
@@ -123,9 +177,12 @@ def get_files(file_dir):
     label = np.array(label)
     train = train.reshape(train.shape[0], img_rows, img_cols, img_channels)
     return train,label
+#'''
+
 # The data: train_set  validation_set
 train_dir = "./picTrain"
 validation_dir = "./picValidation"
+
 train, train_label = get_files(train_dir)
 validation, validation_label = get_files(validation_dir)
 
@@ -160,13 +217,23 @@ model.compile(#loss='binary_crossentropy',
 for data_augmentation in data_augmentation_switch:
     if not data_augmentation:
         print('Not using data augmentation.')
+        #os.system("rm -rf ./parameter_save/weight.h5")
         train_datagen = ImageDataGenerator(
             rescale=1./255,
             shear_range=0.0,
             zoom_range=0.0,
-            horizontal_flip=True
+            horizontal_flip=True,
+            featurewise_center=True,  # set input mean to 0 over the dataset
+            samplewise_center=True  # set each sample mean to 0
         )
-        test_datagen = ImageDataGenerator(rescale=1./255)
+        test_datagen = ImageDataGenerator(
+            rescale=1./255,
+            shear_range=0.0,
+            zoom_range=0.0,
+            horizontal_flip=True,
+            featurewise_center=True,  # set input mean to 0 over the dataset
+            samplewise_center=True  # set each sample mean to 0
+        )
 
         train_generator = train_datagen.flow_from_directory(
             directory=r"./picTrain/",
@@ -189,40 +256,105 @@ for data_augmentation in data_augmentation_switch:
 
         FirstTrain = model.fit_generator(
             generator=train_generator,
-            steps_per_epoch=train.shape[0] // batch_size,
-            epochs=nb_epoch,
-            validation_data=validation_generator,
-            validation_steps=nb_epoch
+            #steps_per_epoch=train.shape[0] // batch_size,
+            steps_per_epoch = batch_epoch_train,
+            epochs = nb_epoch,
+            validation_data = validation_generator,
+            validation_steps = batch_epoch_val
             #callbacks=[lr_reducer, early_stopper, csv_logger]
         )
         model.save('./parameter_save/weight.h5')
         plotTrainResult(FirstTrain, nb_epoch)
     else:
         print('Using real-time data augmentation.')
+        #os.system("rm -rf ./parameter_save/weight_augmentation.h5")
+        '''
         datagen = ImageDataGenerator(
-            featurewise_center=False,  # set input mean to 0 over the dataset
-            samplewise_center=False,  # set each sample mean to 0
-            featurewise_std_normalization=False,  # divide inputs by std of the dataset
-            samplewise_std_normalization=False,  # divide each input by its std
+            featurewise_center=True,  # set input mean to 0 over the dataset
+            samplewise_center=True,  # set each sample mean to 0
+            featurewise_std_normalization=True,  # divide inputs by std of the dataset
+            samplewise_std_normalization=True,  # divide each input by its std
             zca_whitening=False,  # apply ZCA whitening
             rotation_range=0,  # randomly rotate images in the range (degrees, 0 to 180)
             width_shift_range=0.1,  # randomly shift images horizontally (fraction of total width)
             height_shift_range=0.1,  # randomly shift images vertically (fraction of total height)
             horizontal_flip=True,  # randomly flip images
             vertical_flip=False)  # randomly flip images
-
+        #'''
         # Compute quantities required for featurewise normalization
         # (std, mean, and principal components if ZCA whitening is applied).
-        datagen.fit(train)
+        #datagen.fit(train)
 
-        model.load_weights('./parameter_save/weight.h5', by_name=True)
+        #model.load_weights('./parameter_save/weight.h5', by_name=True)
         #'''
         # Fit the model on the batches generated by datagen.flow().
+        train_aug_datagen = ImageDataGenerator(
+            rescale=1./255,
+            featurewise_center=True,  # set input mean to 0 over the dataset
+            samplewise_center=True,  # set each sample mean to 0
+            featurewise_std_normalization=True,  # divide inputs by std of the dataset
+            samplewise_std_normalization=True,  # divide each input by its std
+            zca_whitening=False,  # apply ZCA whitening
+            rotation_range=0,  # randomly rotate images in the range (degrees, 0 to 180)
+            width_shift_range=0.1,  # randomly shift images horizontally (fraction of total width)
+            height_shift_range=0.1,  # randomly shift images vertically (fraction of total height)
+            horizontal_flip=True,  # randomly flip images
+            vertical_flip=False # randomly flip images
+        )
+
+        train_aug_datagen.fit(train)
+
+        test_aug_datagen = ImageDataGenerator(
+            rescale=1./255,
+            featurewise_center=True,  # set input mean to 0 over the dataset
+            samplewise_center=True,  # set each sample mean to 0
+            featurewise_std_normalization=True,  # divide inputs by std of the dataset
+            samplewise_std_normalization=True,  # divide each input by its std
+            zca_whitening=False,  # apply ZCA whitening
+            rotation_range=0,  # randomly rotate images in the range (degrees, 0 to 180)
+            width_shift_range=0.1,  # randomly shift images horizontally (fraction of total width)
+            height_shift_range=0.1,  # randomly shift images vertically (fraction of total height)
+            horizontal_flip=True,  # randomly flip images
+            vertical_flip=False # randomly flip images
+        )
+
+        test_aug_datagen.fit(validation)
+
+        train_aug_generator = train_aug_datagen.flow_from_directory(
+            directory=r"./picTrain/",
+            target_size=(32, 32),
+            batch_size=batch_size,
+            color_mode="rgb",
+            shuffle=True,
+            seed=28,
+            class_mode='categorical')
+
+        validation_aug_generator = test_aug_datagen.flow_from_directory(
+            directory=r"./picValidation/",
+            target_size=(32, 32),
+            batch_size=batch_size_val,
+            color_mode="rgb",
+            shuffle=True,
+            seed=33,
+            class_mode='categorical'
+        )
+        '''
         Augmentation = model.fit_generator(datagen.flow(train, train_label, batch_size=batch_size),
                             steps_per_epoch=train.shape[0] // batch_size,
                             validation_data=(validation, validation_label),
-                            epochs=nb_epoch, verbose=1, max_q_size=10
+                            epochs=nb_epoch, verbose=1, max_q_size=250
                             #callbacks=[lr_reducer, early_stopper, csv_logger]
                                      )
+        #'''
+        #model.load_weights('./parameter_save/weight.h5', by_name=True)
+        Augmentation = model.fit_generator(
+            generator=train_aug_generator,
+            #steps_per_epoch=train.shape[0] // batch_size,
+            steps_per_epoch = batch_epoch_train,
+            epochs = nb_epoch,
+            validation_data = validation_aug_generator,
+            validation_steps = batch_epoch_val
+            #callbacks=[lr_reducer, early_stopper, csv_logger]
+        )
         model.save('./parameter_save/weight_augmentation.h5')
         plotAugmentationResult(FirstTrain, Augmentation, nb_epoch)
