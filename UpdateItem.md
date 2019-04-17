@@ -181,8 +181,7 @@ Epoch 3/4
 Epoch 4/4
 40/40 [==============================] - 622s 16s/step - loss: 0.6806 - acc: 0.5140 - val_loss: 0.6940 - val_acc: 0.5163
 ```
-![alt text](./feedback.png "First Training@epoch = 40")
-![alt text](./feedback_DataAugmentation.png "Summary of Train&Val&Aug")
+![alt text](./feedback_TrainValidation_old.png "First Training@epoch = 40")
 
 #### Status
 + ##### Train

@@ -34,7 +34,7 @@ def _conv_bn_relu(**conv_params):
     strides = conv_params.setdefault("strides", (1, 1))
     kernel_initializer = conv_params.setdefault("kernel_initializer", "he_normal")
     padding = conv_params.setdefault("padding", "same")
-    kernel_regularizer = conv_params.setdefault("kernel_regularizer", l2(1.e+4))
+    kernel_regularizer = conv_params.setdefault("kernel_regularizer", l2(1.e-4))
 
     def f(input):
         conv = Conv2D(filters=filters, kernel_size=kernel_size,
@@ -55,7 +55,7 @@ def _bn_relu_conv(**conv_params):
     strides = conv_params.setdefault("strides", (1, 1))
     kernel_initializer = conv_params.setdefault("kernel_initializer", "he_normal")
     padding = conv_params.setdefault("padding", "same")
-    kernel_regularizer = conv_params.setdefault("kernel_regularizer", l2(1.e+4))
+    kernel_regularizer = conv_params.setdefault("kernel_regularizer", l2(1.e-4))
 
     def f(input):
         activation = _bn_relu(input)
@@ -87,7 +87,7 @@ def _shortcut(input, residual):
                           strides=(stride_width, stride_height),
                           padding="valid",
                           kernel_initializer="he_normal",
-                          kernel_regularizer=l2(1.e+4))(input)
+                          kernel_regularizer=l2(1.e-4))(input)
 
     return add([shortcut, residual])
 
@@ -119,7 +119,7 @@ def basic_block(filters, init_strides=(1, 1), is_first_block_of_first_layer=Fals
                            strides=init_strides,
                            padding="same",
                            kernel_initializer="he_normal",
-                           kernel_regularizer=l2(1.e+4))(input)
+                           kernel_regularizer=l2(1.e-4))(input)
         else:
             conv1 = _bn_relu_conv(filters=filters, kernel_size=(3, 3),
                                   strides=init_strides)(input)
@@ -144,7 +144,7 @@ def bottleneck(filters, init_strides=(1, 1), is_first_block_of_first_layer=False
                               strides=init_strides,
                               padding="same",
                               kernel_initializer="he_normal",
-                              kernel_regularizer=l2(1.e+4))(input)
+                              kernel_regularizer=l2(1.e-4))(input)
         else:
             conv_1_1 = _bn_relu_conv(filters=filters, kernel_size=(1, 1),
                                      strides=init_strides)(input)
