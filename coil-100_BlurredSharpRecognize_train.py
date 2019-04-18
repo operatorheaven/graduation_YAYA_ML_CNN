@@ -212,7 +212,6 @@ model.compile(#loss='binary_crossentropy',
              )
 
 #keras.optimizers.Adadelta(lr=learnRate, rho=0.95, epsilon=None, decay=0.0)
-git filter-branch --force --index-filter 'git rm -rf --cached --ignore-unmatch big-file.jar' --prune-empty --tag-name-filter cat -- --all
 
 
 # This will do preprocessing and realtime data augmentation:
